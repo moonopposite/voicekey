@@ -2,9 +2,6 @@ name: Build VoiceKey iOS IPA (unsigned)
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['ios/**', '.github/workflows/ios-build.yml']
 
 jobs:
   build:
