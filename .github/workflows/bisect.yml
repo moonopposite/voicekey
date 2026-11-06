@@ -1,48 +1,28 @@
 name: Bisect
-
 on:
   workflow_dispatch:
-
 jobs:
-  build:
+  t1-checkout:
     runs-on: macos-14
-    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install xcodegen
-        run: brew install xcodegen
-
-      - name: Install Rust iOS targets
-        run: |
-          set -e
-          if ! command -v cargo >/dev/null 2>&1; then
-            curl -fsSL https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
-            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          fi
-          rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
-
-      - name: Cache Rust build
-        uses: actions/cache@v4
+      - run: echo "checkout ok"
+  t2-cache:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
-          path: ios/VoiceKeyCore/rust/target
-          key: rust-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'ios/VoiceKeyCore/rust/Cargo.lock') }}
-
-      - name: Cache librime/boost sources
-        uses: actions/cache@v4
+          path: /tmp/nope
+          key: bisect-${{ github.run_id }}
+      - run: echo "cache ok"
+  t3-upload:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo hi > /tmp/artifact.txt
+      - uses: actions/upload-artifact@v4
         with:
-          path: ios/Pinyin/.cache
-          key: pinyin-cache-${{ hashFiles('ios/Pinyin/versions.env') }}
-
-      - name: Build unsigned IPA
-        run: |
-          set -x
-          export SHELLOPTS
-          ios/build.sh --unsigned
-
-      - name: Upload IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: VoiceKey-unsigned
-          path: ios/build/VoiceKey-unsigned.ipa
-          retention-days: 14
+          name: bisect-t3
+          path: /tmp/artifact.txt
+      - run: echo "upload ok"
