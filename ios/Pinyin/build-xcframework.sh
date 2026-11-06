@@ -76,7 +76,8 @@ build() {
         "$prefix"/lib/lib{leveldb,marisa,yaml-cpp,opencc}.a
 }
 build ios iphoneos arm64
-build sim iphonesimulator "arm64;x86_64"
+# CI 只出真机包：不编模拟器切片，并释放 CMake 构建目录防磁盘耗尽
+rm -rf "$CACHE/build"
 
 # 头文件放进 RimeFFI/ 子目录，免得和 VoiceKeyCoreFFI 的 include/module.modulemap 撞名
 HDR=$CACHE/include
