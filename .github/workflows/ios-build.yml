@@ -34,6 +34,13 @@ jobs:
           path: ios/Pinyin/.cache
           key: pinyin-cache-${{ hashFiles('ios/Pinyin/versions.env') }}
 
+      - name: Select Xcode 26 (iOS 26 SDK required by topEdgeEffect etc.)
+        run: |
+          ls -d /Applications/Xcode* 2>/dev/null || true
+          X26=$(ls -d /Applications/Xcode_26* /Applications/Xcode-26* 2>/dev/null | sort -V | tail -1)
+          if [ -n "$X26" ]; then sudo xcode-select -s "$X26/Contents/Developer"; fi
+          xcodebuild -version
+
       - name: Build unsigned IPA
         run: |
           set -x
