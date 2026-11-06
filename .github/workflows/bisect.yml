@@ -1,0 +1,48 @@
+name: Bisect
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Install Rust iOS targets
+        run: |
+          set -e
+          if ! command -v cargo >/dev/null 2>&1; then
+            curl -fsSL https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          fi
+          rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+
+      - name: Cache Rust build
+        uses: actions/cache@v4
+        with:
+          path: ios/VoiceKeyCore/rust/target
+          key: rust-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'ios/VoiceKeyCore/rust/Cargo.lock') }}
+
+      - name: Cache librime/boost sources
+        uses: actions/cache@v4
+        with:
+          path: ios/Pinyin/.cache
+          key: pinyin-cache-${{ hashFiles('ios/Pinyin/versions.env') }}
+
+      - name: Build unsigned IPA
+        run: |
+          set -x
+          export SHELLOPTS
+          ios/build.sh --unsigned
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoiceKey-unsigned
+          path: ios/build/VoiceKey-unsigned.ipa
+          retention-days: 14
