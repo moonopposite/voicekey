@@ -4,8 +4,11 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 VoiceKeyCore/build-xcframework.sh
+df -h /System/Volumes/Data || true
 Pinyin/build-xcframework.sh
+df -h /System/Volumes/Data || true
 Pinyin/build-data.sh
+df -h /System/Volumes/Data || true
 xcodegen generate --quiet
 if [ "${1:-}" = "--unsigned" ]; then
     U=build/unsigned
