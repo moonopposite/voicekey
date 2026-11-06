@@ -1,6 +1,7 @@
 #!/bin/bash
 # 雾凇拼音全套词库 + 补充词（流行新词、人工智能）→ 全拼/九宫格方案，用与 librime 同版本的 rime_deployer 在 Mac 上预编译
 set -euo pipefail
+set -x
 cd "$(dirname "$0")"
 source versions.env
 CACHE=$PWD/.cache
