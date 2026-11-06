@@ -87,7 +87,6 @@ printf 'module RimeFFI {\n    header "rime_api.h"\n    link "c++"\n    export *\
 rm -rf "$OUT"
 xcodebuild -create-xcframework \
     -library "$CACHE/out/ios/librime.a" -headers "$HDR" \
-    -library "$CACHE/out/sim/librime.a" -headers "$HDR" \
     -output "$OUT" >/dev/null
 echo "$STAMP" > "$OUT/.stamp"
 echo "$OUT ($LIBRIME_VERSION)"
