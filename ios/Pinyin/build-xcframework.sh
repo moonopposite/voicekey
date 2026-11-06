@@ -38,6 +38,11 @@ if [ ! -f "$OCT/src/octagram.cc" ]; then
     git clone -q --depth 1 https://github.com/lotem/librime-octagram.git "$OCT"
 fi
 # octagram 依赖 utf8-cpp 与 darts-clone 头文件
+# CI 环境下 /tmp 没有作者本机预置的 utfcpp：按需下载解压（v4.0.5 与源文件名一致）
+if [ ! -f /tmp/utfcpp-4.0.5/source/utf8.h ]; then
+    echo "fetching utfcpp 4.0.5..."
+    curl -fsSL --retry 5 --retry-all-errors https://github.com/nemtrif/utfcpp/archive/refs/tags/v4.0.5.tar.gz | tar -xz -C /tmp
+fi
 UTF8_INC=$CACHE/utfcpp-include
 mkdir -p "$UTF8_INC/utf8"
 cp -f /tmp/utfcpp-4.0.5/source/utf8.h "$UTF8_INC/"
