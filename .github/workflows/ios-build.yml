@@ -37,7 +37,6 @@ jobs:
       - name: Build unsigned IPA
         run: |
           set -x
-          export SHELLOPTS
           ios/build.sh --unsigned
 
       - name: Upload IPA
