@@ -37,7 +37,10 @@ jobs:
           key: pinyin-cache-${{ hashFiles('ios/Pinyin/versions.env') }}
 
       - name: Build unsigned IPA
-        run: ios/build.sh --unsigned
+        run: |
+          set -x
+          export SHELLOPTS
+          ios/build.sh --unsigned
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
