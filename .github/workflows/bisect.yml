@@ -2,27 +2,17 @@ name: Bisect
 on:
   workflow_dispatch:
 jobs:
-  t1-checkout:
+  t4-checkout5:
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
-      - run: echo "checkout ok"
-  t2-cache:
+      - uses: actions/checkout@v5
+      - run: echo "checkout5 ok"
+  t5-cache5:
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v5
+      - uses: actions/cache@v5
         with:
-          path: /tmp/nope
-          key: bisect-${{ github.run_id }}
-      - run: echo "cache ok"
-  t3-upload:
-    runs-on: macos-14
-    steps:
-      - uses: actions/checkout@v4
-      - run: echo hi > /tmp/artifact.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: bisect-t3
-          path: /tmp/artifact.txt
-      - run: echo "upload ok"
+          path: /tmp/nope2
+          key: bisect5-${{ github.run_id }}
+      - run: echo "cache5 ok"
