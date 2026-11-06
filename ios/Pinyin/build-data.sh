@@ -6,9 +6,15 @@ cd "$(dirname "$0")"
 source versions.env
 CACHE=$PWD/.cache
 OUT=Sources/Pinyin/RimeData
-STAMP="librime $LIBRIME_VERSION ($LIBRIME_COMMIT) rime-ice $RIME_ICE_TAG $(cat rime/* | shasum -a 256 | cut -c1-16) $(shasum -a 256 .cache/zh-hans-t-essay-bgw.gram 2>/dev/null | cut -c1-16)"
-if [ "$(cat "$OUT/VERSION" 2>/dev/null)" = "$STAMP" ]; then exit 0; fi
 mkdir -p "$CACHE"
+# 八股文语言模型：作者本机 .cache 预置，CI 需自行下载（lotem/rime-octagram-data release）
+# 同时修复 set -e + pipefail 下 STAMP 命令替换失败的静默退出
+if [ ! -f "$CACHE/zh-hans-t-essay-bgw.gram" ]; then
+    curl -fsSL --retry 5 --retry-all-errors -o "$CACHE/zh-hans-t-essay-bgw.gram" \
+        https://github.com/lotem/rime-octagram-data/releases/download/20260712/zh-hans-t-essay-bgw.gram
+fi
+STAMP="librime $LIBRIME_VERSION ($LIBRIME_COMMIT) rime-ice $RIME_ICE_TAG $(cat rime/* | shasum -a 256 | cut -c1-16) $(shasum -a 256 "$CACHE/zh-hans-t-essay-bgw.gram" | cut -c1-16)"
+if [ "$(cat "$OUT/VERSION" 2>/dev/null)" = "$STAMP" ]; then exit 0; fi
 
 fetch() { # fetch <url> <file> <sha256>
     if ! echo "$3  $2" | shasum -a 256 -c - >/dev/null 2>&1; then
